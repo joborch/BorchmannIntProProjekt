@@ -1,7 +1,10 @@
 %Working Directory setzen
-currentFilePath = mfilename('fullpath'); %speichern vom Pfad der genutzten Datei
-[currentFolderPath, ~, ~] = fileparts(currentFilePath); %rausspeichern vom Ordner-Pfad 
-cd(currentFolderPath); %Aktuelles Working Directory setzen!
+cd("C:\Users\borch\Documents\GitHub\BorchmannIntProProjekt")
+
+% FUNKTIONIERT AKTUELL NICHT!
+% currentFilePath = mfilename('fmfiullpath'); %speichern vom Pfad der genutzten Datei
+% [currentFolderPath, ~, ~] = fileparts(currentFilePath); %rausspeichern vom Ordner-Pfad 
+% cd(currentFolderPath); %Aktuelles Working Directory setzen!
 
 
 %% Basisdaten
@@ -22,7 +25,7 @@ square_offset = 50; % Abstand zwischen dem Kreuz und dem Quadrat
 square_start_row = center + cross_size + square_offset; %Start-Reihe: von der Mitte aus das Fixationskreuz und einen Abstand nehmen.
 square_start_col = center - round(square_size / 2); %von der Mitte aus die Hälfte des Quadrats nach links 
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_belowcenter.bmp');
+imwrite(bitmap, './bitmaps/sq_belowcenter.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -34,7 +37,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center - cross_size - square_offset-square_size; %Start-Reihe: von der Mitte aus das Fixationskreuz und einen Abstand nehmen.
 square_start_col = center - round(square_size / 2); %von der Mitte aus die Hälfte des Quadrats nach links 
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_overcenter.bmp');
+imwrite(bitmap, './bitmaps/sq_overcenter.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -46,7 +49,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center - round(square_size / 2);
 square_start_col = center + cross_size + square_offset; %von der Mitte aus die Hälfte des Quadrats nach links 
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_rightcenter.bmp');
+imwrite(bitmap, './bitmaps/sq_rightcenter.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -59,7 +62,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center - round(square_size / 2);
 square_start_col = center - cross_size - square_offset - square_size; %von der Mitte aus die Hälfte des Quadrats nach links 
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_leftcenter.bmp');
+imwrite(bitmap, './bitmaps/sq_leftcenter.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -71,7 +74,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center - cross_size - square_offset-square_size; %Positionierung oben
 square_start_col = center - cross_size - square_offset - square_size; %Positionierung links vom Kreuz 
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_leftover.bmp');
+imwrite(bitmap, './bitmaps/sq_leftover.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -84,7 +87,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center - cross_size - square_offset-square_size; %Positionierung oben
 square_start_col = center + cross_size + square_offset; %Positionierung rechts vom Kreuz
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_rightover.bmp');
+imwrite(bitmap, './bitmaps/sq_rightover.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -96,7 +99,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center + cross_size + square_offset; %Positionierung unten
 square_start_col = center - cross_size - square_offset - square_size; %Positionierung links vom Kreuz 
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_leftunder.bmp');
+imwrite(bitmap, './bitmaps/sq_leftunder.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
@@ -108,7 +111,7 @@ bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thic
 square_start_row = center + cross_size + square_offset; %Positionierung unten
 square_start_col = center + cross_size + square_offset; %Positionierung rechts vom Kreuz
 bitmap(square_start_row:square_start_row + square_size - 1, square_start_col:square_start_col + square_size - 1) = 1; %Quadrat
-imwrite(bitmap, 'sq_rightunder.bmp');
+imwrite(bitmap, './bitmaps/sq_rightunder.bmp');
 
 %Fixationskreuz wiederherstellen
 bitmap = zeros(size,size);
