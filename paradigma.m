@@ -11,6 +11,10 @@ ratioFactor = 0.25;
 bitmapPath = '.\bitmaps\';
 %Change this if you want to change the path of the stored Tones
 tonePath = '.\tondateien\';
+%Define how many different Index Arrays you want to exist!
+indexArrays = 40;
+%Define how many Targets you want to exist in each Index Array!
+targetAmount = 8;
 
 
 
@@ -19,47 +23,130 @@ currentFilePath = mfilename('fullpath'); %speichern vom Pfad der genutzten Datei
 [currentFolderPath, ~, ~] = fileparts(currentFilePath); %rausspeichern vom Ordner-Pfad 
 cd(currentFolderPath); %Aktuelles Working Directory setzen!
 
-%%Vorbereitung von Index-Arrays
+%% Vorbereitung von Index-Arrays
 %Die Index-Arrays sind für das randomisierte Darstellen der Bitmaps und Töne verantwortlich
 %Es wird kontrolliert ob mindestens 10 und maximal 13 "n-2" Treffer exisitieren
 %Indexe für die Bitmap-Darstellung
-indLib = cell(20,1);
+%1 Back Index
+indLib1b = cell(indexArrays,1);
+i=1;
+while i <= indexArrays
+    ind(1,:) = randi([1, 8], 1, 20);
+    ind(2,:) = zeros(1,20);
+
+    rep = 0;
+    for j = 2:(20)
+        if ind(1,j) == ind(1,j-1)
+            rep = rep + 1;
+            ind(2,j) = 1;
+        end
+    end
+    if rep == targetAmount
+        if i>1
+            for k = 1:i
+                if ind == indLib1b{k}
+                    disp("Abbruch");
+                    break;
+                else
+                    disp("saved");
+                    indLib1b{i} = ind;
+                    i = i+1;
+                    break;
+                end
+            end
+        elseif i==1
+            disp("saved");
+            indLib1b{i} = ind;
+            i = i+1;        
+        end
+    end
+end
+
+%2 Back Index
+indLib2b = cell(indexArrays,1);
 i=1;
 
-
-while i <= 20
-    ind2b(1,:) = randi([1, 8], 1, 20)
-    ind2b(2,:) = zeros(1,20);
+while i <= indexArrays
+    ind(1,:) = randi([1, 8], 1, 20);
+    ind(2,:) = zeros(1,20);
 
     rep = 0;
     for j = 3:(20)
-        if ind2b(1,j) == ind2b(1,j-2)
+        if ind(1,j) == ind(1,j-2)
             rep = rep + 1;
-            ind2b(2,j) = 1;
+            ind(2,j) = 1;
         end
     end
-    if rep == 10
-        indLib{i} = ind2b
-        i = i+1;
+    if rep == 5
+        if i>1
+            for k = 1:i
+                if ind == indLib2b{k}
+                    disp("Abbruch");
+                    break;
+                else
+                    disp("saved");
+                    indLib2b{i} = ind;
+                    i = i+1;
+                    break;
+                end
+            end
+        elseif i==1
+            disp("saved");
+            indLib2b{i} = ind;
+            i = i+1;        
+        end
     end
 end
 
-while 1
-    indBM = indBM(randperm(length(indBM)));
-    countRepBM = 0;
-    for i = 3:(32)
-        if indBM(i) == indBM(i-2)
-            countRepBM = countRepBM + 1;
+%3 Back Index
+indLib3b = cell(indexArrays,1);
+i=1;
+
+while i <= indexArrays
+    ind(1,:) = randi([1, 8], 1, 20);
+    ind(2,:) = zeros(1,20);
+
+    rep = 0;
+    for j = 4:(20)
+        if ind(1,j) == ind(1,j-3)
+            rep = rep + 1;
+            ind(2,j) = 1;
         end
-        
     end
-    triesBM = triesBM + 1;
-    if countRepBM > 10 && countRepBM < 13
-        disp(countRepBM);
-        disp(triesBM);
-        break;
+    if rep == 5
+        if i>1
+            for k = 1:i
+                if ind == indLib3b{k}
+                    disp("Abbruch");
+                    break;
+                else
+                    disp("saved");
+                    indLib3b{i} = ind;
+                    i = i+1;
+                    break;
+                end
+            end
+        elseif i==1
+            disp("saved");
+            indLib3b{i} = ind;
+            i = i+1;        
+        end
     end
 end
+
+%Definition dargebotener indexArrays für Töne und Bitmaps
+toneIndexNum = randi([4 indexArrays]);
+BMIndexNum = round(toneIndex*0.7);
+
+toneIndex1b = indLib1b{toneIndexNum};
+toneIndex2b = indLib2b{toneIndexNum};
+toneIndex3b = indLib3b{toneIndexNum};
+
+BMIndex1b = indLib1b{BMIndexNum};
+BMIndex2b = indLib2b{BMIndexNum};
+BMIndex3b = indLib3b{BMIndexNum};
+
+
 %% Geräte-Spezifika einstellen
 %Gerätefarben
 white  = WhiteIndex(currentScreen); %Color Index White
