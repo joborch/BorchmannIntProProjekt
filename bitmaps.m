@@ -17,6 +17,7 @@ cross_thick = 1;
 cross_size = 10;
 bitmap(center-cross_thick:center+cross_thick, center-cross_size:center+cross_size)=1; %Horizontale Linie
 bitmap(center-cross_size:center+cross_size, center-cross_thick:center+cross_thick) = 1; %Vertikale Linie
+imwrite(bitmap, './fixcross.bmp');
 
 
 %% Quadrat unten

@@ -154,6 +154,10 @@ BMIndex2b = indLib2b{BMIndexNum};
 BMIndex3b = indLib3b{BMIndexNum};
 disp("Bitmap-Reihenfolgen Intialisiert!");
 
+%Vorbereitung von Versuchsspeicherung
+rt = nan(3,20);
+KeyIsDown = 0; %Vordefinieren von KeyIsDown!
+
 %% Geräte-Spezifika einstellen
 %Gerätefarben
 white  = WhiteIndex(currentScreen); %Color Index White
@@ -194,25 +198,46 @@ try
     disp("Tondateien eingelesen!");
 
     %% Fixationskreuz
-    %Fixationskreuz erstellen.
-    fixCross = ones(50,50)*255;
-    fixCross(23:27,:) = 0;
-    fixCross(:,23:27) = 0;
-    fixcrossTexture = Screen('MakeTexture', win, fixCross); %Textur für Fixationskreuz definieren
+    fixcross = imread('.\fixcross.bmp');
+    fixcrossTexture = Screen('MakeTexture', win, fixcross); %Textur für Fixationskreuz definieren
 
     %% Experimentsdarbietung
     %Test-Trial mit 2b Bedingung
+    Screen('DrawTexture', win, fixcrossTexture);
+    tStart = Screen('Flip', win, tOnset + BM_pres);
     for i = 1:20
         if i == 1
             Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
-            tOnset = Screen('Flip', win);
+            tOnset = Screen('Flip', win, tStart + 5);
+            
             Screen('DrawTexture', win, fixcrossTexture);
-            tFix = Screen('Flip', win, tOnset + BM_pres);
+            [tFix, StimulusOnsetTime] = Screen('Flip', win, tOnset + BM_pres);
+            
+            %Reaktionszeitmessung und Keyboardcheck
+            while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
+                [KeyIsDown, endRT, KeyCode, ~] = KbCheck();
+                
+                WaitSecs(0.001);
+            end
+            rt(1,i) = endRT - StimulusOnsetTime;
+            rt(2,i) = KeyIsDown;
+            KeyIsDown = 0;
         else
             Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
             tOnset = Screen('Flip', win, tFix + FC_pres);
+            
             Screen('DrawTexture', win, fixcrossTexture);
-            tFix = Screen('Flip', win, tOnset + BM_pres);
+            [tFix, StimulusOnsetTime] = Screen('Flip', win, tOnset + BM_pres);
+            
+            %Reaktionszeitmessung und Keyboardcheck
+            while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
+                [KeyIsDown, endRT, KeyCode, ~] = KbCheck();
+                
+                WaitSecs(0.001);
+            end
+            rt(1,i) = endRT - StimulusOnsetTime;
+            rt(2,i) = KeyIsDown;
+            KeyIsDown = 0;
         end
     end
 
