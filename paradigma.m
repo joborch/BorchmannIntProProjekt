@@ -29,34 +29,39 @@ gray = (white+black)/2; %Color Index Gray
 
 ratio = [0 0 width*ratioFactor height*ratioFactor]; %Definition of Ratio for myWindow
 
-win = Screen('OpenWindow', currentScreen, black, ratio); %Opens a window on the defined Screen, with the defined ratioFactor (see Changable Setting Section)
+try
+    win = Screen('OpenWindow', currentScreen, black, ratio); %Opens a window on the defined Screen, with the defined ratioFactor (see Changable Setting Section)
 
-%% Einlesen der Bitmaps
-bitmapsFolder = dir(bitmapPath); %Definition of "Bitmaps" Folder
+    %% Einlesen der Bitmaps
+    bitmapsFolder = dir(bitmapPath); %Definition of "Bitmaps" Folder
 
-bitmaps = cell(8,1);
-bitmapTextures = double(8);
+    bitmaps = cell(8,1);
+    bitmapTextures = double(8);
 
-for i = 3:10
-    bitmaps{i-2} = imread(fullfile(bitmapPath ,bitmapsFolder(i).name));
-    bitmapTextures(i-2) = Screen('MakeTexture', win, bitmaps{i-2});
+    for i = 3:10
+        bitmaps{i-2} = imread(fullfile(bitmapPath ,bitmapsFolder(i).name));
+        bitmapTextures(i-2) = Screen('MakeTexture', win, bitmaps{i-2});
+    end
+    disp("Bitmaps eingelesen!");
+
+    %% Einlesen der Tondateien
+    tondateienFolder = dir(tonePath); %Definition of "Tondateien" Folder
+
+    wavedata = cell(26,1);
+    freq = double(26);
+    pahandle = double(26);
+
+    for i = 3:28
+        [wavedata{i-2}, freq(i-2)] = audioread(fullfile(tonePath, tondateienFolder(i).name));
+        pahandle(i-2) = PsychPortAudio('Open', [], [], 1, freq(i-2), 1, 0);
+        PsychPortAudio('FillBuffer', pahandle(i-2), wavedata{i-2}');
+    end
+    disp("Tondateien eingelesen!");
+catch ME
+    Screen('CloseAll');
+    disp("An error occured:");
+    diso(ME.message);
 end
-disp("Bitmaps eingelesen!");
-
-%% Einlesen der Tondateien
-tondateienFolder = dir(tonePath); %Definition of "Tondateien" Folder
-
-wavedata = cell(26,1);
-freq = double(26);
-pahandle = double(26);
-
-for i = 3:28
-    [wavedata{i-2}, freq(i-2)] = audioread(fullfile(tonePath, tondateienFolder(i).name));
-    pahandle(i-2) = PsychPortAudio('Open', [], [], 1, freq(i-2), 1, 0);
-    PsychPortAudio('FillBuffer', pahandle(i-2), wavedata{i-2}');
-end
-disp("Tondateien eingelesen!");
-
 
 KbWait;
 Screen('CloseAll');
