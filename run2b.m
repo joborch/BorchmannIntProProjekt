@@ -13,7 +13,7 @@ for i = 1:20
         
         %Reaktionszeitmessung und Keyboardcheck
         while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
-            [KeyIsDown, endRT, KeyCode, ~] = KbCheck();
+            [KeyIsDown, endRT, ~, ~] = KbCheck();
             
             WaitSecs(0.001);
         end
@@ -29,7 +29,7 @@ for i = 1:20
         
         %Reaktionszeitmessung und Keyboardcheck
         while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
-            [KeyIsDown, endRT, KeyCode, ~] = KbCheck();
+            [KeyIsDown, endRT, ~, ~] = KbCheck();
             
             WaitSecs(0.001);
         end
