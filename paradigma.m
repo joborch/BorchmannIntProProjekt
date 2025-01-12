@@ -156,7 +156,6 @@ disp("Bitmap-Reihenfolgen Intialisiert!");
 
 %Vorbereitung von Versuchsspeicherung
 rt = nan(2,20);
-KeyIsDown = 0; %Vordefinieren von KeyIsDown!
 
 %% Geräte-Spezifika einstellen
 %Gerätefarben
@@ -205,42 +204,8 @@ try
     %Test-Trial mit 2b Bedingung
     Screen('DrawTexture', win, fixcrossTexture);
     tStart = Screen('Flip', win, tOnset + BM_pres);
-    for i = 1:20
-        if i == 1
-            Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
-            tOnset = Screen('Flip', win, tStart + 5);
-            PsychPortAudio('Start', pahandle(toneIndex2b(1,i)), 1, tStart + 5);
-            Screen('DrawTexture', win, fixcrossTexture);
-            [tFix, StimulusOnsetTime] = Screen('Flip', win, tOnset + BM_pres);
-            
-            %Reaktionszeitmessung und Keyboardcheck
-            while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
-                [KeyIsDown, endRT, KeyCode, ~] = KbCheck();
-                
-                WaitSecs(0.001);
-            end
-            rt(1,i) = endRT - StimulusOnsetTime;
-            rt(2,i) = KeyIsDown;
-            KeyIsDown = 0;
-        else
-            Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
-            tOnset = Screen('Flip', win, tFix + FC_pres);
-            PsychPortAudio('Start', pahandle(toneIndex2b(1,i)), 1, tStart + 5);
-            Screen('DrawTexture', win, fixcrossTexture);
-            [tFix, StimulusOnsetTime] = Screen('Flip', win, tOnset + BM_pres);
-            
-            %Reaktionszeitmessung und Keyboardcheck
-            while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
-                [KeyIsDown, endRT, KeyCode, ~] = KbCheck();
-                
-                WaitSecs(0.001);
-            end
-            rt(1,i) = endRT - StimulusOnsetTime;
-            rt(2,i) = KeyIsDown;
-            KeyIsDown = 0;
-        end
-    end
-
+    
+    rt = run2b(BMIndex2b, toneIndex2b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tStart, win);
 catch ME
     Screen('CloseAll');
     disp("An error occured:");
