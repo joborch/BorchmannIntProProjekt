@@ -155,7 +155,7 @@ BMIndex3b = indLib3b{BMIndexNum};
 disp("Bitmap-Reihenfolgen Intialisiert!");
 
 %Vorbereitung von Versuchsspeicherung
-rt = nan(3,20);
+rt = nan(2,20);
 KeyIsDown = 0; %Vordefinieren von KeyIsDown!
 
 %% Geräte-Spezifika einstellen
@@ -209,7 +209,7 @@ try
         if i == 1
             Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
             tOnset = Screen('Flip', win, tStart + 5);
-            
+            PsychPortAudio('Start', pahandle(toneIndex2b(1,i)), 1, tStart + 5);
             Screen('DrawTexture', win, fixcrossTexture);
             [tFix, StimulusOnsetTime] = Screen('Flip', win, tOnset + BM_pres);
             
@@ -225,7 +225,7 @@ try
         else
             Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
             tOnset = Screen('Flip', win, tFix + FC_pres);
-            
+            PsychPortAudio('Start', pahandle(toneIndex2b(1,i)), 1, tStart + 5);
             Screen('DrawTexture', win, fixcrossTexture);
             [tFix, StimulusOnsetTime] = Screen('Flip', win, tOnset + BM_pres);
             
