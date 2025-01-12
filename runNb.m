@@ -1,4 +1,4 @@
-function [answers] = run2b(BMInd,ToneInd, toneLib, bitmapLib, BitmapTime, fixcrossTexture, FixCrossTime, tStart, WindowPtr)
+function [answers] = runNb(BMInd,ToneInd, toneLib, bitmapLib, BitmapTime, fixcrossTexture, FixCrossTime, tStart, WindowPtr)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 answers = nan(2,20);
