@@ -16,6 +16,12 @@ indexArrays = 40;
 %Define how many Targets you want to exist in each Index Array!
 targetAmount = 8;
 
+%Define the time of Bitmap presentation
+BM_pres = 0.5;
+%Define the time of FixCross presentation
+FC_pres = 2.5;
+
+
 
 
 %% Working Directory
@@ -136,16 +142,17 @@ end
 
 %Definition dargebotener indexArrays für Töne und Bitmaps
 toneIndexNum = randi([4 indexArrays]);
-BMIndexNum = round(toneIndex*0.7);
+BMIndexNum = round(toneIndexNum*0.7);
 
 toneIndex1b = indLib1b{toneIndexNum};
 toneIndex2b = indLib2b{toneIndexNum};
 toneIndex3b = indLib3b{toneIndexNum};
+disp("Ton-Reihenfolgen Intialisiert!");
 
 BMIndex1b = indLib1b{BMIndexNum};
 BMIndex2b = indLib2b{BMIndexNum};
 BMIndex3b = indLib3b{BMIndexNum};
-
+disp("Bitmap-Reihenfolgen Intialisiert!");
 
 %% Geräte-Spezifika einstellen
 %Gerätefarben
@@ -159,7 +166,7 @@ ratio = [0 0 width*ratioFactor height*ratioFactor]; %Definition of Ratio for myW
 
 try
     win = Screen('OpenWindow', currentScreen, black, ratio); %Opens a window on the defined Screen, with the defined ratioFactor (see Changable Setting Section)
-
+    InitializePsychSound(1);
     %% Einlesen der Bitmaps
     bitmapsFolder = dir(bitmapPath); %Definition of "Bitmaps" Folder
 
@@ -186,13 +193,33 @@ try
     end
     disp("Tondateien eingelesen!");
 
-    %% Experimentsvorbereitung
-    
+    %% Fixationskreuz
+    %Fixationskreuz erstellen.
+    fixCross = ones(50,50)*255;
+    fixCross(23:27,:) = 0;
+    fixCross(:,23:27) = 0;
+    fixcrossTexture = Screen('MakeTexture', win, fixCross); %Textur für Fixationskreuz definieren
+
+    %% Experimentsdarbietung
+    %Test-Trial mit 2b Bedingung
+    for i = 1:20
+        if i == 1
+            Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
+            tOnset = Screen('Flip', win);
+            Screen('DrawTexture', win, fixcrossTexture);
+            tFix = Screen('Flip', win, tOnset + BM_pres);
+        else
+            Screen('DrawTexture', win, bitmapTextures(BMIndex2b(1,i)));
+            tOnset = Screen('Flip', win, tFix + FC_pres);
+            Screen('DrawTexture', win, fixcrossTexture);
+            tFix = Screen('Flip', win, tOnset + BM_pres);
+        end
+    end
 
 catch ME
     Screen('CloseAll');
     disp("An error occured:");
-    diso(ME.message);
+    disp(ME.message);
 end
 
 KbWait;
