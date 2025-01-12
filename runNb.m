@@ -7,7 +7,7 @@ for i = 1:20
     if i == 1
         Screen('DrawTexture', WindowPtr, bitmapLib(BMInd(1,i)));
         tOnset = Screen('Flip', WindowPtr, tStart + 5);
-        PsychPortAudio('Start', toneLib(ToneInd(1,i)), 1, tStart + 5);
+        PsychPortAudio('Start', toneLib(ToneInd(1,i)), 1, tStart + 15);
         Screen('DrawTexture', WindowPtr, fixcrossTexture);
         [tFix, StimulusOnsetTime] = Screen('Flip', WindowPtr, tOnset + BitmapTime);
         
