@@ -19,6 +19,47 @@ currentFilePath = mfilename('fullpath'); %speichern vom Pfad der genutzten Datei
 [currentFolderPath, ~, ~] = fileparts(currentFilePath); %rausspeichern vom Ordner-Pfad 
 cd(currentFolderPath); %Aktuelles Working Directory setzen!
 
+%%Vorbereitung von Index-Arrays
+%Die Index-Arrays sind für das randomisierte Darstellen der Bitmaps und Töne verantwortlich
+%Es wird kontrolliert ob mindestens 10 und maximal 13 "n-2" Treffer exisitieren
+%Indexe für die Bitmap-Darstellung
+indLib = cell(20,1);
+i=1;
+
+
+while i <= 20
+    ind2b(1,:) = randi([1, 8], 1, 20)
+    ind2b(2,:) = zeros(1,20);
+
+    rep = 0;
+    for j = 3:(20)
+        if ind2b(1,j) == ind2b(1,j-2)
+            rep = rep + 1;
+            ind2b(2,j) = 1;
+        end
+    end
+    if rep == 10
+        indLib{i} = ind2b
+        i = i+1;
+    end
+end
+
+while 1
+    indBM = indBM(randperm(length(indBM)));
+    countRepBM = 0;
+    for i = 3:(32)
+        if indBM(i) == indBM(i-2)
+            countRepBM = countRepBM + 1;
+        end
+        
+    end
+    triesBM = triesBM + 1;
+    if countRepBM > 10 && countRepBM < 13
+        disp(countRepBM);
+        disp(triesBM);
+        break;
+    end
+end
 %% Geräte-Spezifika einstellen
 %Gerätefarben
 white  = WhiteIndex(currentScreen); %Color Index White
@@ -47,16 +88,20 @@ try
     %% Einlesen der Tondateien
     tondateienFolder = dir(tonePath); %Definition of "Tondateien" Folder
 
-    wavedata = cell(26,1);
-    freq = double(26);
-    pahandle = double(26);
+    wavedata = cell(8,1);
+    freq = double(8);
+    pahandle = double(8);
 
-    for i = 3:28
+    for i = 3:10
         [wavedata{i-2}, freq(i-2)] = audioread(fullfile(tonePath, tondateienFolder(i).name));
         pahandle(i-2) = PsychPortAudio('Open', [], [], 1, freq(i-2), 1, 0);
         PsychPortAudio('FillBuffer', pahandle(i-2), wavedata{i-2}');
     end
     disp("Tondateien eingelesen!");
+
+    %% Experimentsvorbereitung
+    
+
 catch ME
     Screen('CloseAll');
     disp("An error occured:");
@@ -64,4 +109,5 @@ catch ME
 end
 
 KbWait;
+PsychPortAudio('Close');
 Screen('CloseAll');
