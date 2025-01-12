@@ -22,7 +22,16 @@ BM_pres = 0.5;
 FC_pres = 2.5;
 
 
-
+%Define the Time for which the Instructions are showed!
+showTimeInst = 15;
+%Instruktion für 0b
+B0Inst = "HALLO!";
+%Instruktion für 1b
+B1Inst = "HALLO!";
+%Instruktion für 2b
+B2Inst = "HALLO!";
+%Instruktion für 3b
+B3Inst = "HALLO!";
 
 %% Working Directory
 currentFilePath = mfilename('fullpath'); %speichern vom Pfad der genutzten Datei
@@ -154,6 +163,14 @@ BMIndex2b = indLib2b{BMIndexNum};
 BMIndex3b = indLib3b{BMIndexNum};
 disp("Bitmap-Reihenfolgen Intialisiert!");
 
+%Vordefinition der Randomisierten Darbietung der Elemente
+a = 1;
+b = 2;
+c = 3;
+num = [a a b b c c];
+pseudoRand = perms(num);
+perm = pseudoRand(randi([1, 720]),:);
+
 %Vorbereitung von Versuchsspeicherung
 rt = nan(2,20);
 
@@ -201,11 +218,53 @@ try
     fixcrossTexture = Screen('MakeTexture', win, fixcross); %Textur für Fixationskreuz definieren
 
     %% Experimentsdarbietung
-    %Test-Trial mit 2b Bedingung
-    Screen('DrawTexture', win, fixcrossTexture);
-    tStart = Screen('Flip', win, tOnset + BM_pres);
+    %Start Instruktion
+    Screen('DrawTexture', win, fixcrossTexture); %EINFÜGEN DER START INSTRUKTION
+    tStart = Screen('Flip', win);
     
-    rt = run2b(BMIndex2b, toneIndex2b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tStart, win);
+    for i = 1:6
+        if perm(i) == 1
+            indBM = BMIndex1b;
+            indT = toneIndex1b;
+            NBInst = B1Inst;
+        elseif perm(i) == 2
+            indBM = BMIndex1b;
+            indT = toneIndex1b;
+            NBInst = B2Inst;
+        elseif perm(i) == 3
+            indBM = BMIndex1b;
+            indT = toneIndex1b;
+            NBInst = B3Inst;
+        end
+        if i == 1
+            %Instruktion 0b
+            Screen('DrawText', win, B0Inst, center, center);
+            tInst = Screen('Flip', win, tStart + showTimeInst);
+
+            [rt, endTime] = run0b();
+
+            %Instruktion Nb
+            Screen('DrawText', win, NBInst, center, center);
+            tInst = Screen('Flip', win, endTime + showTimeInst);
+
+            [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+        else
+            %Instruktion 0b
+            Screen('DrawText', win, B0Inst, center, center);
+            tInst = Screen('Flip', win, endTime + showTimeInst);
+
+            [rt, endTime] = run0b();
+
+            %Instruktion Nb
+            Screen('DrawText', win, NBInst, center, center);
+            tInst = Screen('Flip', win, endTime + showTimeInst);
+
+            [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+        end
+    end
+
+
+
 catch ME
     Screen('CloseAll');
     disp("An error occured:");
