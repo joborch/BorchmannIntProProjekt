@@ -4,36 +4,36 @@
 
 %% Changable Settings
 %Change this to the preferred Screen for PTB!
-currentScreen = 1;
+currentScreen = 0;
 %Change this to your preferred Screen-Ratio for the PTB-Screen (1 = Fullscreen)
-ratioFactor = 0.25;
+ratioFactor = 1;
 %Change this if you want to change the path of the stored Bitmaps
 bitmapPath = '.\bitmaps\';
 %Change this if you want to change the path of the stored Tones
 tonePath = '.\tondateien\';
 %Define how many different Index Arrays you want to exist!
-indexArrays = 40;
+indexArrays = 5;
 %Define how many Targets you want to exist in each Index Array!
 targetAmount = 8;
 
 %Define the time of Bitmap presentation
-BM_pres = 0.5;
+BM_pres = 0.1;
 %Define the time of FixCross presentation
-FC_pres = 2.5;
+FC_pres = 0.2;
 
 
 %Define the Time for which the Instructions are showed!
-showTimeInst = 3;
+showTimeInst = 0.1;
 %Instruktion am Start
-inst = ['HALLO!'];
+inst = ['Herzlich willkommen in dieser Studie! \n danke das du dir die Zeit nimmst dein Arbeitsgedächtnis herauszufordern. \n Du bekommst gleich visuelle und akustische Stimuli dargeboten. \n Diese werden in einer 0-Back, 1-Back, 2-Back oder 3-Back Bedingung präsentiert. \n '];
 %Instruktion für 0b
-B0Inst = ['Instruktion \n in dieser Aufgabe musst du immer dann die \n Leertaste drücken, wenn du entweder Q hörst \n oder ein Quadrat in der Ecke unten-links siehst'];
+B0Inst = ['Instruktion 0 BACK\n In dieser Aufgabe musst du immer dann die \n Leertaste drücken, wenn du entweder Q hörst \n oder ein Quadrat in der Ecke unten-links siehst'];
 %Instruktion für 1b
-B1Inst = ['Du startest B1!'];
+B1Inst = ['Instruktion 1 BACK \n In dieser Aufgabe musst du immer dann die \n Leertaste drücken, wenn ein Element akustisch oder visuell \n dem letzten gleicht.'];
 %Instruktion für 2b
-B2Inst = ['Du startest B2!'];
+B2Inst = ['Instruktion 2 BACK \n In dieser Aufgabe musst du immer dann die \n Leertaste drücken, wenn ein Element akustisch oder visuell \n dem vorletzten gleicht.'];
 %Instruktion für 3b
-B3Inst = ['Du startest B3!'];
+B3Inst = ['Instruktion 3 BACK \n In dieser Aufgabe musst du immer dann die \n Leertaste drücken, wenn ein Element akustisch oder visuell \n dem vorvorletzten gleicht.'];
 
 %% Working Directory
 currentFilePath = mfilename('fullpath'); %speichern vom Pfad der genutzten Datei
@@ -180,7 +180,8 @@ toClear = {'toneIndexNum', 'BMIndexNum', 'pseudoRand', 'num', 'a', 'b', 'c', 'i'
 clear(toClear{:});
 
 %Vorbereitung von Versuchsspeicherung
-rt = nan(2,20);
+rt = nan(4,180);
+
 
 %% Geräte-Spezifika einstellen
 %Gerätefarben
@@ -227,49 +228,53 @@ try
 
     %% Experimentsdarbietung
     %Start Instruktion
-    Screen('TextSize', win, 32)
+    Screen('TextSize', win, 40)
     DrawFormattedText(win, inst, 'center', 'center', white);
     tStart = Screen('Flip', win);
-    
+    k=1;
     for i = 1:6
         if perm(i) == 1
             indBM = BMIndex1b;
             indT = toneIndex1b;
             NBInst = B1Inst;
+            task(1,1:20) = 1;
         elseif perm(i) == 2
             indBM = BMIndex1b;
             indT = toneIndex1b;
             NBInst = B2Inst;
+            task(1,1:20) = 2;
         elseif perm(i) == 3
             indBM = BMIndex1b;
             indT = toneIndex1b;
             NBInst = B3Inst;
+            task(1,1:20) = 3;
         end
         if i == 1
             %Instruktion 0b
             DrawFormattedText(win, B0Inst, 'center', 'center', white);
             tInst = Screen('Flip', win, tStart + showTimeInst);
             
-
-            % [rt, endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
-
+            [answers, endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            rt(:,k:k+9) = answers;
+            k = k+10;
             %Instruktion Nb
             DrawFormattedText(win, NBInst, 'center', 'center', white);
             tInst = Screen('Flip', win, tInst + showTimeInst);
-
-            % [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            k = k+20;
         else
             %Instruktion 0b
             DrawFormattedText(win, B0Inst, 'center', 'center', white);
             tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            % [rt, endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
-
+            [rt(:,k:k+9), endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            k = k+10;
             %Instruktion Nb
             DrawFormattedText(win, NBInst, 'center', 'center', white);
             tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            % [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            k = k+20;
         end
     end
 
@@ -281,6 +286,43 @@ catch ME
     disp(ME.message);
 end
 
+%% Meta-Daten einschreiben
+l = 1;
+for i = 1:6
+    if perm(i) == 1
+        indBM = BMIndex1b;
+        indT = toneIndex1b;
+        NBInst = B1Inst;
+        task = 1;
+    elseif perm(i) == 2
+        indBM = BMIndex1b;
+        indT = toneIndex1b;
+        NBInst = B2Inst;
+        task = 2;
+    elseif perm(i) == 3
+        indBM = BMIndex1b;
+        indT = toneIndex1b;
+        NBInst = B3Inst;
+        task = 3;
+    end
+    rt(3,l:l+9) = 0; %Task Information 0 = 0Back;
+    rt(4,l:l+9) = 0; %Target-Information 0 = kein Target, 1 = Target 
+    l = l+10;
+    rt(3,l:l+19) = task;
+    %Target hits einschreiben für akustisch oder visuelle Targets
+    for j = 1:20
+        if indBM(2,j) == 1 || indT(2,j) == 1
+            rt(4,l) = 1;
+            l=l+1;
+        else
+            rt(4,l) = 0;
+            l=l+1;
+        end
+    end
+end
+
+writematrix(rt, 'test-RT');
+%% Abschluss
 KbWait;
 PsychPortAudio('Close');
 Screen('CloseAll');

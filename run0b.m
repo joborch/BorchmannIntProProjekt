@@ -1,7 +1,7 @@
 function [answers, tLast] = run0b(BMInd,ToneInd, toneLib, bitmapLib, BitmapTime, fixcrossTexture, FixCrossTime, tStart, WindowPtr)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-answers = nan(2,10);
+answers = nan(4,10);
 KeyIsDown = 0;
 for i = 1:10
     if i == 1
@@ -12,7 +12,7 @@ for i = 1:10
         [tFix, StimulusOnsetTime] = Screen('Flip', WindowPtr, tOnset + BitmapTime);
         
         %Reaktionszeitmessung und Keyboardcheck
-        while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
+        while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=(FixCrossTime-0.1)
             [KeyIsDown, endRT, ~, ~] = KbCheck();
             
             WaitSecs(0.001);
@@ -20,6 +20,7 @@ for i = 1:10
         answers(1,i) = endRT - StimulusOnsetTime;
         answers(2,i) = KeyIsDown;
         KeyIsDown = 0;
+        PsychPortAudio('Stop', toneLib(ToneInd(1,i)))
     else
         Screen('DrawTexture', WindowPtr, bitmapLib(BMInd(1,i)));
         tOnset = Screen('Flip', WindowPtr, tFix + FixCrossTime);
@@ -28,7 +29,7 @@ for i = 1:10
         [tFix, StimulusOnsetTime] = Screen('Flip', WindowPtr, tOnset + BitmapTime);
         
         %Reaktionszeitmessung und Keyboardcheck
-        while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=2.4
+        while (KeyIsDown == 0) && (GetSecs - StimulusOnsetTime)<=(FixCrossTime-0.1)
             [KeyIsDown, endRT, ~, ~] = KbCheck();
             
             WaitSecs(0.001);
@@ -36,8 +37,8 @@ for i = 1:10
         answers(1,i) = endRT - StimulusOnsetTime;
         answers(2,i) = KeyIsDown;
         KeyIsDown = 0;
+        PsychPortAudio('Stop', toneLib(ToneInd(1,i)))
     end
     tLast = tFix+FixCrossTime;
 end
-
 end
