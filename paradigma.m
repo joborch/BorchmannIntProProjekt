@@ -12,18 +12,15 @@ bitmapPath = '.\bitmaps\';
 %Change this if you want to change the path of the stored Tones
 tonePath = '.\tondateien\';
 %Define how many different Index Arrays you want to exist!
-indexArrays = 5;
-%Define how many Targets you want to exist in each Index Array!
-targetAmount = 8;
-
+indexArrays = 40;
 %Define the time of Bitmap presentation
-BM_pres = 0.1;
+BM_pres = 0.5;
 %Define the time of FixCross presentation
-FC_pres = 0.2;
+FC_pres = 2.5;
 
 
 %Define the Time for which the Instructions are showed!
-showTimeInst = 0.1;
+showTimeInst = 15;
 %Instruktion am Start
 inst = ['Herzlich willkommen in dieser Studie! \n danke das du dir die Zeit nimmst dein Arbeitsgedächtnis herauszufordern. \n Du bekommst gleich visuelle und akustische Stimuli dargeboten. \n Diese werden in einer 0-Back, 1-Back, 2-Back oder 3-Back Bedingung präsentiert. \n '];
 %Instruktion für 0b
@@ -45,123 +42,27 @@ cd(currentFolderPath); %Aktuelles Working Directory setzen!
 %Es wird kontrolliert ob mindestens 10 und maximal 13 "n-2" Treffer exisitieren
 %Indexe für die Bitmap-Darstellung
 %1 Back Index
-indLib1b = cell(indexArrays,1);
-i=1;
-while i <= indexArrays
-    ind(1,:) = randi([1, 8], 1, 20);
-    ind(2,:) = zeros(1,20);
-
-    rep = 0;
-    for j = 2:(20)
-        if ind(1,j) == ind(1,j-1)
-            rep = rep + 1;
-            ind(2,j) = 1;
-        end
-    end
-    if rep == targetAmount
-        if i>1
-            for k = 1:i
-                if ind == indLib1b{k}
-                    disp("Abbruch");
-                    break;
-                else
-                    disp("saved");
-                    indLib1b{i} = ind;
-                    i = i+1;
-                    break;
-                end
-            end
-        elseif i==1
-            disp("saved");
-            indLib1b{i} = ind;
-            i = i+1;        
-        end
-    end
-end
-
+indLib1b = createLib(1, indexArrays, 0);
 %2 Back Index
-indLib2b = cell(indexArrays,1);
-i=1;
-
-while i <= indexArrays
-    ind(1,:) = randi([1, 8], 1, 20);
-    ind(2,:) = zeros(1,20);
-
-    rep = 0;
-    for j = 3:(20)
-        if ind(1,j) == ind(1,j-2)
-            rep = rep + 1;
-            ind(2,j) = 1;
-        end
-    end
-    if rep == 5
-        if i>1
-            for k = 1:i
-                if ind == indLib2b{k}
-                    disp("Abbruch");
-                    break;
-                else
-                    disp("saved");
-                    indLib2b{i} = ind;
-                    i = i+1;
-                    break;
-                end
-            end
-        elseif i==1
-            disp("saved");
-            indLib2b{i} = ind;
-            i = i+1;        
-        end
-    end
-end
-
+indLib2b = createLib(2, indexArrays, 0);
 %3 Back Index
-indLib3b = cell(indexArrays,1);
-i=1;
+indLib3b = createLib(3, indexArrays, 0);
 
-while i <= indexArrays
-    ind(1,:) = randi([1, 8], 1, 20);
-    ind(2,:) = zeros(1,20);
-
-    rep = 0;
-    for j = 4:(20)
-        if ind(1,j) == ind(1,j-3)
-            rep = rep + 1;
-            ind(2,j) = 1;
-        end
-    end
-    if rep == 5
-        if i>1
-            for k = 1:i
-                if ind == indLib3b{k}
-                    disp("Abbruch");
-                    break;
-                else
-                    disp("saved");
-                    indLib3b{i} = ind;
-                    i = i+1;
-                    break;
-                end
-            end
-        elseif i==1
-            disp("saved");
-            indLib3b{i} = ind;
-            i = i+1;        
-        end
-    end
-end
+%Sicherung, dass mindestens 2 Hits pro Kategorie in 0B sein werden
+%0 Back Index - Bitmaps
+indLib0bBM = createLib(0, indexArrays, 4);
+%0 Back Index - Tones
+indLib0bT = createLib(0, indexArrays, 6);
 
 %Definition dargebotener indexArrays für Töne und Bitmaps
 toneIndexNum = randi([4 indexArrays]);
 BMIndexNum = round(toneIndexNum*0.7);
 
-toneIndex0b = randi([1, 8], 1, 10);
 toneIndex1b = indLib1b{toneIndexNum};
 toneIndex2b = indLib2b{toneIndexNum};
 toneIndex3b = indLib3b{toneIndexNum};
 disp("Ton-Reihenfolgen Intialisiert!");
 
-BMIndex0b = randi([1, 8], 1, 10);
 BMIndex1b = indLib1b{BMIndexNum};
 BMIndex2b = indLib2b{BMIndexNum};
 BMIndex3b = indLib3b{BMIndexNum};
@@ -181,7 +82,6 @@ clear(toClear{:});
 
 %Vorbereitung von Versuchsspeicherung
 rt = nan(4,180);
-
 
 %% Geräte-Spezifika einstellen
 %Gerätefarben
@@ -228,58 +128,94 @@ try
 
     %% Experimentsdarbietung
     %Start Instruktion
-    Screen('TextSize', win, 40)
-    DrawFormattedText(win, inst, 'center', 'center', white);
-    tStart = Screen('Flip', win);
-    k=1;
-    for i = 1:6
-        if perm(i) == 1
+    Screen('TextSize', win, 40);
+    DrawFormattedText(win, 'Wähle den Ausführungsmodus! \n Drücke d für Demo. \n Drücke r für Testmodus', 'center', 'center', white);
+    Screen('Flip', win);
+    KeyIsDown = 0;
+    modus = 'a';
+    while (KeyIsDown == 0)
+        [KeyIsDown, ~, keyCode, ~] = KbCheck();
+        modus = KbName(keyCode);
+        WaitSecs(0.001);
+    end
+    if modus == 'd'
+        DrawFormattedText(win, inst, 'center', 'center', white);
+        tStart = Screen('Flip', win);
+        k=1;
+        if perm(1) == 1
             indBM = BMIndex1b;
             indT = toneIndex1b;
             NBInst = B1Inst;
-            task(1,1:20) = 1;
-        elseif perm(i) == 2
-            indBM = BMIndex1b;
-            indT = toneIndex1b;
+        elseif perm(1) == 2
+            indBM = BMIndex2b;
+            indT = toneIndex2b;
             NBInst = B2Inst;
-            task(1,1:20) = 2;
-        elseif perm(i) == 3
-            indBM = BMIndex1b;
-            indT = toneIndex1b;
+        elseif perm(1) == 3
+            indBM = BMIndex3b;
+            indT = toneIndex3b;
             NBInst = B3Inst;
-            task(1,1:20) = 3;
         end
-        if i == 1
-            %Instruktion 0b
-            DrawFormattedText(win, B0Inst, 'center', 'center', white);
-            tInst = Screen('Flip', win, tStart + showTimeInst);
-            
-            [answers, endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
-            rt(:,k:k+9) = answers;
-            k = k+10;
-            %Instruktion Nb
-            DrawFormattedText(win, NBInst, 'center', 'center', white);
-            tInst = Screen('Flip', win, tInst + showTimeInst);
-            [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
-            k = k+20;
-        else
-            %Instruktion 0b
-            DrawFormattedText(win, B0Inst, 'center', 'center', white);
-            tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            [rt(:,k:k+9), endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
-            k = k+10;
-            %Instruktion Nb
-            DrawFormattedText(win, NBInst, 'center', 'center', white);
-            tInst = Screen('Flip', win, tInst + showTimeInst);
+        %Instruktion 0b
+        DrawFormattedText(win, B0Inst, 'center', 'center', white);
+        tInst = Screen('Flip', win, tStart + showTimeInst);
+        
+        [rt(:,k:k+9), endTime] = run0b(indLib0bBM{1}, indLib0bT{1}, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+        k = 11;
+        %Instruktion Nb
+        DrawFormattedText(win, NBInst, 'center', 'center', white);
+        tInst = Screen('Flip', win, tInst + showTimeInst);
+        [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+    elseif modus == 'r'
+        DrawFormattedText(win, inst, 'center', 'center', white);
+        tStart = Screen('Flip', win);
+        k=1;
+        for i = 1:6
+            if perm(i) == 1
+                indBM = BMIndex1b;
+                indT = toneIndex1b;
+                NBInst = B1Inst;
+            elseif perm(1) == 2
+                indBM = BMIndex2b;
+                indT = toneIndex2b;
+                NBInst = B2Inst;
+            elseif perm(1) == 3
+                indBM = BMIndex3b;
+                indT = toneIndex3b;
+                NBInst = B3Inst;
+            end
+            if i == 1
+                %Instruktion 0b
+                DrawFormattedText(win, B0Inst, 'center', 'center', white);
+                tInst = Screen('Flip', win, tStart + showTimeInst);
+                
+                [rt(:,k:k+9), endTime] = run0b(indLib0bBM{i}, indLib0bT{i}, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+                k = k+10;
+                %Instruktion Nb
+                DrawFormattedText(win, NBInst, 'center', 'center', white);
+                tInst = Screen('Flip', win, tInst + showTimeInst);
+                [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+                k = k+20;
+            else
+                %Instruktion 0b
+                DrawFormattedText(win, B0Inst, 'center', 'center', white);
+                tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
-            k = k+20;
+                [rt(:,k:k+9), endTime] = run0b(indLib0bBM{i}, indLib0bT{i}, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+                k = k+10;
+                %Instruktion Nb
+                DrawFormattedText(win, NBInst, 'center', 'center', white);
+                tInst = Screen('Flip', win, tInst + showTimeInst);
+
+                [rt(:,k:k+19), endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+                k = k+20;
+            end
         end
+    else
+        PsychPortAudio('Close');
+        Screen('CloseAll');
+        disp("Experiment wurde nicht Ordnungsgemäß gestartet!");
     end
-
-
-
 catch ME
     Screen('CloseAll');
     disp("An error occured:");
@@ -295,19 +231,33 @@ for i = 1:6
         NBInst = B1Inst;
         task = 1;
     elseif perm(i) == 2
-        indBM = BMIndex1b;
-        indT = toneIndex1b;
+        indBM = BMIndex2b;
+        indT = toneIndex2b;
         NBInst = B2Inst;
         task = 2;
     elseif perm(i) == 3
-        indBM = BMIndex1b;
-        indT = toneIndex1b;
+        indBM = BMIndex3b;
+        indT = toneIndex3b;
         NBInst = B3Inst;
         task = 3;
     end
+    indNBM = indLib0bBM{i};
+    indNT = indLib0bT{i};
     rt(3,l:l+9) = 0; %Task Information 0 = 0Back;
-    rt(4,l:l+9) = 0; %Target-Information 0 = kein Target, 1 = Target 
-    l = l+10;
+    %Target Hits definiert auf Bitmap 4 (in diesem Fall leftunder.bmp)
+    %Target Hits definiert auf Ton 6 (in diesem Fall Q.mp3)
+    for j = 1:10
+        if indNBM(2,j) == 1
+            rt(4,l) = 1;
+            l=l+1;
+        elseif indNT(2,j) == 1
+            rt(4,l) = 1;
+            l=l+1;
+        else
+            rt(4,l) = 0;
+            l=l+1;
+        end
+    end
     rt(3,l:l+19) = task;
     %Target hits einschreiben für akustisch oder visuelle Targets
     for j = 1:20
