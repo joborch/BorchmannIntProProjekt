@@ -23,15 +23,17 @@ FC_pres = 2.5;
 
 
 %Define the Time for which the Instructions are showed!
-showTimeInst = 15;
+showTimeInst = 3;
+%Instruktion am Start
+inst = ['HALLO!'];
 %Instruktion für 0b
-B0Inst = "HALLO!";
+B0Inst = ['Instruktion \n in dieser Aufgabe musst du immer dann die \n Leertaste drücken, wenn du entweder Q hörst \n oder ein Quadrat in der Ecke unten-links siehst'];
 %Instruktion für 1b
-B1Inst = "HALLO!";
+B1Inst = ['Du startest B1!'];
 %Instruktion für 2b
-B2Inst = "HALLO!";
+B2Inst = ['Du startest B2!'];
 %Instruktion für 3b
-B3Inst = "HALLO!";
+B3Inst = ['Du startest B3!'];
 
 %% Working Directory
 currentFilePath = mfilename('fullpath'); %speichern vom Pfad der genutzten Datei
@@ -153,11 +155,13 @@ end
 toneIndexNum = randi([4 indexArrays]);
 BMIndexNum = round(toneIndexNum*0.7);
 
+toneIndex0b = randi([1, 8], 1, 10);
 toneIndex1b = indLib1b{toneIndexNum};
 toneIndex2b = indLib2b{toneIndexNum};
 toneIndex3b = indLib3b{toneIndexNum};
 disp("Ton-Reihenfolgen Intialisiert!");
 
+BMIndex0b = randi([1, 8], 1, 10);
 BMIndex1b = indLib1b{BMIndexNum};
 BMIndex2b = indLib2b{BMIndexNum};
 BMIndex3b = indLib3b{BMIndexNum};
@@ -170,6 +174,10 @@ c = 3;
 num = [a a b b c c];
 pseudoRand = perms(num);
 perm = pseudoRand(randi([1, 720]),:);
+
+%Speicher entlasten
+toClear = {'toneIndexNum', 'BMIndexNum', 'pseudoRand', 'num', 'a', 'b', 'c', 'i', 'indLib1b', 'indLib2b', 'indLib3b', 'toClear'};
+clear(toClear{:});
 
 %Vorbereitung von Versuchsspeicherung
 rt = nan(2,20);
@@ -219,7 +227,8 @@ try
 
     %% Experimentsdarbietung
     %Start Instruktion
-    Screen('DrawTexture', win, fixcrossTexture); %EINFÜGEN DER START INSTRUKTION
+    Screen('TextSize', win, 32)
+    DrawFormattedText(win, inst, 'center', 'center', white);
     tStart = Screen('Flip', win);
     
     for i = 1:6
@@ -238,28 +247,29 @@ try
         end
         if i == 1
             %Instruktion 0b
-            Screen('DrawText', win, B0Inst, center, center);
+            DrawFormattedText(win, B0Inst, 'center', 'center', white);
             tInst = Screen('Flip', win, tStart + showTimeInst);
+            
 
-            [rt, endTime] = run0b();
+            % [rt, endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
 
             %Instruktion Nb
-            Screen('DrawText', win, NBInst, center, center);
-            tInst = Screen('Flip', win, endTime + showTimeInst);
+            DrawFormattedText(win, NBInst, 'center', 'center', white);
+            tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            % [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
         else
             %Instruktion 0b
-            Screen('DrawText', win, B0Inst, center, center);
-            tInst = Screen('Flip', win, endTime + showTimeInst);
+            DrawFormattedText(win, B0Inst, 'center', 'center', white);
+            tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            [rt, endTime] = run0b();
+            % [rt, endTime] = run0b(BMIndex0b, toneIndex0b, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
 
             %Instruktion Nb
-            Screen('DrawText', win, NBInst, center, center);
-            tInst = Screen('Flip', win, endTime + showTimeInst);
+            DrawFormattedText(win, NBInst, 'center', 'center', white);
+            tInst = Screen('Flip', win, tInst + showTimeInst);
 
-            [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
+            % [rt, endTime] = runNb(indBM, indT, pahandle, bitmapTextures, BM_pres, fixcrossTexture, FC_pres, tInst, win);
         end
     end
 

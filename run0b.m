@@ -1,9 +1,9 @@
 function [answers, tLast] = run0b(BMInd,ToneInd, toneLib, bitmapLib, BitmapTime, fixcrossTexture, FixCrossTime, tStart, WindowPtr)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-answers = nan(2,20);
+answers = nan(2,10);
 KeyIsDown = 0;
-for i = 1:20
+for i = 1:10
     if i == 1
         Screen('DrawTexture', WindowPtr, bitmapLib(BMInd(1,i)));
         tOnset = Screen('Flip', WindowPtr, tStart + 5);
