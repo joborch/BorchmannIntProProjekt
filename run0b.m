@@ -6,7 +6,7 @@ KeyIsDown = 0;
 for i = 1:10
     if i == 1
         Screen('DrawTexture', WindowPtr, bitmapLib(BMInd(1,i)));
-        tOnset = Screen('Flip', WindowPtr, tStart + 5);
+        tOnset = Screen('Flip', WindowPtr, tStart + 15);
         PsychPortAudio('Start', toneLib(ToneInd(1,i)), 1, tStart + 15);
         Screen('DrawTexture', WindowPtr, fixcrossTexture);
         [tFix, StimulusOnsetTime] = Screen('Flip', WindowPtr, tOnset + BitmapTime);
@@ -24,7 +24,7 @@ for i = 1:10
     else
         Screen('DrawTexture', WindowPtr, bitmapLib(BMInd(1,i)));
         tOnset = Screen('Flip', WindowPtr, tFix + FixCrossTime);
-        PsychPortAudio('Start', toneLib(ToneInd(1,i)), 1, tStart + 5);
+        PsychPortAudio('Start', toneLib(ToneInd(1,i)), 1, tFix + FixCrossTime);
         Screen('DrawTexture', WindowPtr, fixcrossTexture);
         [tFix, StimulusOnsetTime] = Screen('Flip', WindowPtr, tOnset + BitmapTime);
         

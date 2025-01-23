@@ -4,7 +4,7 @@
 
 %% Changable Settings
 %Change this to the preferred Screen for PTB!
-currentScreen = 0;
+currentScreen = 1;
 %Change this to your preferred Screen-Ratio for the PTB-Screen (1 = Fullscreen)
 ratioFactor = 1;
 %Change this if you want to change the path of the stored Bitmaps
